@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import './App.css'
 
 const StyledMain = styled.main`
-  background-color: ${props => props.backGroundColor[0]};
+  background: linear-gradient(${props => props.angle}, ${props => props.backGroundColor[0]}, ${props => props.backGroundColor[1]}, ${props => props.backGroundColor[2]});
   font-family: 'Courier New', Courier, monospace;
   display: flex;
   flex-direction: column;
@@ -14,10 +14,17 @@ const StyledMain = styled.main`
 `
 
 class App extends Component {
-  state = {
-    backGroundColor: ["#ffffff", "#ffffff", "#ffffff"]
+  constructor(props) {
+    super(props)
+    this.backgroundColor = localStorage.getItem('backgroundColor') ? JSON.parse(localStorage.getItem('backgroundColor')) : ["#ffffff", "#ffffff", "#ffffff"]
+    this.angle = localStorage.getItem('angle') ? localStorage.getItem('angle') : 0
+    this.state = {
+      backGroundColor: this.backgroundColor,
+      angle: this.angle
+    }
   }
 
+    
   handleColorChange = (event, i) => {
     const newColor = event.target.value
     // create a copy of the backGroundColor array
@@ -26,15 +33,28 @@ class App extends Component {
     newBackgroundColor[i] = newColor
     // set the new array as the new state
     this.setState({ backGroundColor: newBackgroundColor })
+    console.log("newBackgroundColor: " + newBackgroundColor)
+    console.log("type: " + typeof newBackgroundColor)
+    localStorage.setItem('backgroundColor', JSON.stringify(newBackgroundColor))
+  }
+  
+  handleAngleChange = (event) => {
+    const newAngle = `${event.target.value}deg`
+    this.setState({ angle: newAngle })
+    localStorage.setItem('angle', newAngle)
   }
 
   render() {
-    const { backGroundColor } = this.state
-
+    const { backGroundColor, angle } = this.state
+    
+    console.log(typeof backGroundColor)
+    
     return (
       // Pass the chosen color into main to set the background
-      <StyledMain backGroundColor={backGroundColor}>
+      <StyledMain backGroundColor={backGroundColor} angle={angle} >
         <h1>CSS Gradient Generator</h1>
+        <label for="angle">Angle:</label>
+        <input type = "number" id="angle" onChange={(event) => this.handleAngleChange(event)}/>
         {backGroundColor.map((color, i) => (
           <input type="color"
             value={color}
