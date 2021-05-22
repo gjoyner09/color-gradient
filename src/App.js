@@ -16,15 +16,22 @@ background: linear-gradient(${props => props.text});
 
 class App extends Component {
   // Get background colors and angle from local storage, or default to white and 0deg
-  constructor(props) {
-    super(props)
-    this.backgroundColor = localStorage.getItem('backgroundColor') ? JSON.parse(localStorage.getItem('backgroundColor')) : ["#ffffff", "#ffffff"]
-    this.angle = localStorage.getItem('angle') ? localStorage.getItem('angle') : 0
-    this.state = {
-      backGroundColor: this.backgroundColor,
-      angle: this.angle
-    }
+  // this.backgroundColor = localStorage.getItem('backgroundColor') ? JSON.parse(localStorage.getItem('backgroundColor')) : ["#ffffff", "#ffffff"]
+  // this.angle = localStorage.getItem('angle') ? localStorage.getItem('angle') : 0
+
+  state = {
+    backGroundColor: ["#ffffff", "#ffffff"],
+    angle: 0
   }
+  
+  componentDidMount() {
+    const colors = localStorage.getItem('backgroundColor')
+    colors && this.setState({ backGroundColor: JSON.parse(colors) })
+    
+    const angle = localStorage.getItem('angle')
+    angle && this.setState({ angle: angle })
+  }
+
 
     
   handleColorChange = (event, i) => {
@@ -41,7 +48,7 @@ class App extends Component {
   
   handleAngleChange = (event) => {
     // set newAngle to be the input from the user, update the state and store in local storage
-    const newAngle = `${event.target.value}deg`
+    const newAngle = event.target.value
     this.setState({ angle: newAngle })
     localStorage.setItem('angle', newAngle)
   }
@@ -62,7 +69,7 @@ class App extends Component {
   
   setBackgroundCSS = (backGroundColor, angle) => {
     // Return a string with the text for the linear-gradient CSS
-    let text = `${angle}`
+    let text = `${angle}deg`
     for (let i = 0; i < backGroundColor.length; i++) {
       text += `, ${backGroundColor[i]}`
     }
@@ -77,11 +84,11 @@ class App extends Component {
       // Pass the relevant CSS (from setBackgroundCSS) into the styled component
       <StyledMain text={backgroundCSStext} >
         <h1>CSS Gradient Generator</h1>
-        <label>How many colours do you want to use?</label>
+        <label htmlFor="numberOfColors">How many colours do you want to use?</label>
         <input type = "number" id="numberOfColors" value={this.state.backGroundColor.length} min="2" max="10" onChange={(event) => this.handleNumberChange(event)}/>
         <br></br>
-        <label>Angle:</label>
-        <input type = "number" id="angle" placeholder={this.state.angle.substring(0, this.state.angle.length - 3)} onChange={(event) => this.handleAngleChange(event)}/>
+        <label htmlFor="angle">Angle:</label>
+        <input type = "number" id="angle" placeholder={this.state.angle} onChange={(event) => this.handleAngleChange(event)}/>
         <br></br>
         {/* Loop through items in the backGroundColor array to show color inputs */}
         {backGroundColor.map((color, i) => (
